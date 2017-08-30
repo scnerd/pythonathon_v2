@@ -1,5 +1,15 @@
+from .pythonathon import db
 
-def _NamedObj:
+Column = db.Column
+Integer = db.Integer
+String = db.String
+DateTime = db.DateTime
+Bool = db.Bool
+PasswordType = db.PasswordType
+ForeignKey = db.ForeignKey
+relationship = db.relationship
+
+class _NamedObj:
     def __repr__(self):
         return "<{} '{}'>".format(type(self).__name__, self.name)
 
@@ -7,7 +17,7 @@ def _NamedObj:
         return self.name
 
 
-class Category(Base, _NamedObj):
+class Category(db.Model, _NamedObj):
     __tablename__ = 'category'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -15,7 +25,7 @@ class Category(Base, _NamedObj):
     name = Column(String)
     requires = Column(Integer, ForeignKey('question.id'))
 
-class Question(Base, _NamedObj):
+class Question(db.Model, _NamedObj):
     __tablename__ = 'question'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -32,16 +42,21 @@ class Question(Base, _NamedObj):
 
     category = relationship('Category', uselist=False, backref='questions')
 
-class User(Base, _NamedObj):
+class User(db.Model, _NamedObj):
     __tablename__ = 'user'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     username = Column(String)
     email = Column(String, nullable=True)
-    password = Column(Hash)
+    password = Column(PasswordType)
     is_admin = Column(Bool, default=False)
 
     solved = relationship('Question', backref='solvers', secondary='solution')
+
+    def __init__(self, *args, **kwargs):
+        self.is_authenticated = False
+        self.is_active = True
+        self.is_anonymous = False
 
     @property
     def score(self):
@@ -55,7 +70,11 @@ class User(Base, _NamedObj):
     def name(self):
         return self.username
 
-class Solution(Base):
+    def get_id(self):
+        return str(id).encode('utf8')
+
+
+class Solution(db.Model):
     __tablename__ = 'solution'
     __table_args__ = (
         PrimaryKeyConstraint('user_id', 'question_id', name='solution_pk'),
@@ -64,7 +83,7 @@ class Solution(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     question_id = Column(Integer, ForeignKey('question.id'))
     submission = Column(String)
-    timestamp = Column(Datetime)
+    timestamp = Column(DateTime)
     success = Column(Bool, default=False)
     used_hint = COlumn(Bool, default=False)
 

@@ -11,7 +11,7 @@ if __name__ == '__main__':
                         type=str, default=None)
     args = parser.parse_args()
 
-    db.create_all_tables(Base)
+    db.create_all()
 
     if args.questions is not None:
         import json

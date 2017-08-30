@@ -1,13 +1,36 @@
-from flask import Flask
+from flask import Flask, request, url_for, render_template
+from urlparse import urlparse, urljoin
+from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
+from flask_wtf import FlaskForm
 import json
 from .models import *
 
+login_manager = LoginManager()
+
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pythonathon_data.db'
+Bootstrap(app)
+login_manager.init_app(app)
+
+db = SQLAlchemy(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
+
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
 
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template('home_page.html')
 
 
 @app.route('/login')

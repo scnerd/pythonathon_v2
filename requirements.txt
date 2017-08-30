@@ -1,0 +1,7 @@
+flask
+flask-bootstrap
+flask-login
+flask-wtf
+wtforms
+sqlalchemy
+plotly
