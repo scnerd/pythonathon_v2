@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
 import json
-from .models import *
+from pythonathon.models import *
 
 login_manager = LoginManager()
 

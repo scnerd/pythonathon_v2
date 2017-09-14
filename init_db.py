@@ -1,5 +1,5 @@
-from .pythonathon import app, db
-from .models import *
+from pythonathon.pythonathon import app, db
+from pythonathon.models import *
 from argparse import ArgumentParser
 import getpass
 

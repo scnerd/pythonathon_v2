@@ -1,4 +1,4 @@
-from .pythonathon import db
+from pythonathon.pythonathon import db
 
 Column = db.Column
 Integer = db.Integer
