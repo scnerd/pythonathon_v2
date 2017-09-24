@@ -1,11 +1,12 @@
-from pythonathon.pythonathon import db
+from pythonathon import db
+import sqlalchemy_utils
 
 Column = db.Column
 Integer = db.Integer
 String = db.String
 DateTime = db.DateTime
-Bool = db.Bool
-PasswordType = db.PasswordType
+Bool = db.Boolean
+PasswordType = sqlalchemy_utils.PasswordType
 ForeignKey = db.ForeignKey
 relationship = db.relationship
 
@@ -38,15 +39,15 @@ class Question(db.Model, _NamedObj):
     answer = Column(String)
     case_sensitive = Column(Bool, default=True)
     points = Column(Integer, default=1)
-    requires = Column(Integer, ForeignKey('question.id'))
+    requires = Column(Integer, ForeignKey('question.id', ondelete='NULL'))
 
-    category = relationship('Category', uselist=False, backref='questions')
+    category = relationship('Category', uselist=False, backref='questions', foreign_keys=[category_id])
 
 class User(db.Model, _NamedObj):
     __tablename__ = 'user'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    username = Column(String)
+    id = Column(Integer, autoincrement=True)
+    username = Column(String, primary_key=True)
     email = Column(String, nullable=True)
     password = Column(PasswordType)
     is_admin = Column(Bool, default=False)
@@ -54,6 +55,7 @@ class User(db.Model, _NamedObj):
     solved = relationship('Question', backref='solvers', secondary='solution')
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.is_authenticated = False
         self.is_active = True
         self.is_anonymous = False
@@ -77,7 +79,7 @@ class User(db.Model, _NamedObj):
 class Solution(db.Model):
     __tablename__ = 'solution'
     __table_args__ = (
-        PrimaryKeyConstraint('user_id', 'question_id', name='solution_pk'),
+        db.PrimaryKeyConstraint('user_id', 'question_id', name='solution_pk'),
     )
 
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -85,7 +87,7 @@ class Solution(db.Model):
     submission = Column(String)
     timestamp = Column(DateTime)
     success = Column(Bool, default=False)
-    used_hint = COlumn(Bool, default=False)
+    used_hint = Column(Bool, default=False)
 
     user = relationship('User', uselist=False, backref='solutions')
     question = relationship('Question', uselist=False, backref='solutions')

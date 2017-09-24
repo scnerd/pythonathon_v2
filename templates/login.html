@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    {% from "_form_helper.html" import render_field %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form name="lform" method="post" action="{{ url_for('login') }}">
+                    <dl>
+                        {{ render_field(login_form.username) }}
+                        {{ render_field(login_form.password) }}
+                    </dl>
+                    <p><input type="submit" value="Login">
+                </form>
+            </div>
+            <div class="col">
+                <form name="rform" method="post" action="{{ url_for('register') }}">
+                    <dl>
+                        {{ render_field(register_form.username) }}
+                        {{ render_field(register_form.email) }}
+                        {{ render_field(register_form.password) }}
+                    </dl>
+                    <p><input type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
